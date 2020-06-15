@@ -1,0 +1,67 @@
+alter table users add column status_id int unsigned not null default 1 after phone;
+select * from users limit 10;
+alter table profiles add column is_private boolean default false after country;
+select * from profiles limit 10;
+alter table profiles add column photo_id int unsigned after user_id;
+select * from profiles limit 10;
+alter table friendship add column declined_at datetime;
+select * from friendship limit 10;
+alter table messages add column media_id int unsigned after body;
+select * from messages limit 10;
+
+
+UPDATE users SET created_at=(@temp:=created_at), created_at = updated_at,  updated_at = @temp WHERE updated_at < created_at;
+UPDATE users SET status_id = 2 WHERE RAND() > 0.9;
+UPDATE users SET status_id = 3 WHERE RAND() > 0.88;
+select * from users limit 10;
+
+UPDATE profiles SET photo_id = FLOOR(1 + RAND()*100);
+CREATE TEMPORARY TABLE genders (name CHAR(1));
+INSERT INTO genders VALUES ('m'), ('f'); 
+UPDATE profiles SET gender = (SELECT name FROM genders ORDER BY RAND() LIMIT 1);
+UPDATE profiles SET is_private = TRUE WHERE RAND() > 0.88;
+UPDATE profiles SET created_at=(@temp:=created_at), created_at = updated_at,  updated_at = @temp WHERE updated_at < created_at;
+UPDATE profiles SET created_at=(@temp:=created_at), created_at = birthday,  birthday = @temp WHERE birthday > created_at;
+UPDATE profiles SET created_at=(@temp:=created_at), created_at = updated_at,  updated_at = @temp WHERE updated_at < created_at;
+select birthday, created_at, updated_at from profiles limit 40;
+
+UPDATE messages SET media_id = FLOOR(1 + RAND() * 100) WHERE from_user_id > FLOOR(1 + RAND() * 100); 
+SELECT * FROM messages LIMIT 40;
+
+UPDATE media SET user_id = FLOOR(1 + RAND()*100);
+UPDATE media SET media_type_id = FLOOR(1 + RAND() * 3);
+CREATE TEMPORARY TABLE extensions (name VARCHAR(10));
+INSERT INTO extensions VALUES ('jpeg'), ('avi'), ('mpeg'), ('png');
+UPDATE media SET filename = CONCAT('https://dropbox/vk/',
+  filename,
+  '.',
+  (SELECT name FROM extensions ORDER BY RAND() LIMIT 1)
+);
+UPDATE media SET size = FLOOR(10000 + (RAND() * 1000000)) WHERE size < 1000;
+UPDATE media SET metadata = CONCAT('{"owner":"', 
+  (SELECT CONCAT(first_name, ' ', last_name) FROM users WHERE id = user_id),
+  '"}');  
+ALTER TABLE media MODIFY COLUMN metadata JSON;
+UPDATE media SET created_at=(@temp:=created_at), created_at = updated_at,  updated_at = @temp WHERE updated_at < created_at;
+SELECT * FROM media LIMIT 40;
+
+
+DELETE FROM communities WHERE id > 20;
+UPDATE communities SET created_at=(@temp:=created_at), created_at = updated_at,  updated_at = @temp WHERE updated_at < created_at;
+SELECT * FROM communities;
+
+INSERT INTO media_types (name) VALUES ('video'), ('photo'), ('audio');
+SELECT * FROM media_types;
+
+TRUNCATE friendship_statuses;
+INSERT INTO friendship_statuses (name) VALUES ('Requested'), ('Confirmed'), ('Rejected');
+SELECT * FROM friendship_statuses;
+
+ALTER TABLE friendship DROP COLUMN requested_at;
+UPDATE friendship SET status_id = FLOOR(1 + RAND() * 3);
+UPDATE friendship SET created_at=(@temp:=created_at), created_at = updated_at,  updated_at = @temp WHERE updated_at < created_at;
+UPDATE friendship SET declined_at = NOW() WHERE RAND() > 0.88;
+SELECT * FROM friendship;
+
+UPDATE communities_users SET community_id = FLOOR(1 + RAND() * 20);
+SELECT * FROM communities_users;
