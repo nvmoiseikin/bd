@@ -1,0 +1,12 @@
+DROP TABLE users;
+CREATE TABLE users (
+  id SERIAL,
+  value INT(32) NOT NULL,
+  created_at VARCHAR(255), 
+  updated_at VARCHAR(255)
+);
+
+TRUNCATE TABLE users;
+INSERT INTO users (value, created_at, updated_at) 
+VALUES (0, "20.10.2017 8:10", "20.10.2017 8:10"), (0, "20.10.2020 8:10", "20.10.2020 8:10"), (5, "19.06.2020 13:21", "19.06.2020 13:21"), 
+(3, "19.05.2021 13:21", "19.05.2021 13:21"), (1, "20.08.2021 13:21", "20.08.2021 13:21"), (0, "20.06.2021 13:21", "20.06.2021 13:21");

@@ -1,0 +1,18 @@
+1)UPDATE users SET updated_at = NOW();
+ALTER TABLE users MODIFY updated_at DATETIME;
+
+2)UPDATE users SET created_at = DATE_FORMAT(STR_TO_DATE(created_at, '%d.%m.%Y %H:%i'), '%Y-%m-%d %H:%i:00');
+ALTER TABLE users MODIFY created_at DATETIME;
+
+3)SELECT * FROM users
+ORDER BY CASE WHEN value = 0 THEN 2147483647 ELSE value END COMMENT "Плохо из-за руками подставелнной константы и возможной колизии";
+
+3.1)(SELECT *, 0 AS line FROM users WHERE value > 0)
+UNION 
+(SELECT *, 1 line FROM users WHERE value < 1)
+ORDER BY line, value;
+
+4*)SELECT * FROM users WHERE DATE_FORMAT(created_at, '%M') IN ('May', 'August');
+
+5*)SELECT * FROM users WHERE id IN(5, 1, 3)
+ORDER BY FIELD(id, 5, 1, 3);
